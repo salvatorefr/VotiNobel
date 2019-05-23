@@ -36,14 +36,14 @@ public class Model {
 	double massimo=0;
 	ArrayList<Esame> risultato=new ArrayList<Esame>();
 	for (ArrayList<Esame> key :combinazioni.keySet()){
-		System.out.println(combinazioni.get(key));
+	
 		if (combinazioni.get(key)>massimo) 
 		{
 			massimo=combinazioni.get(key);
 			risultato=key;
 		}
 	}
-	System.out.println("media migliore: "+combinazioni.get(risultato));
+	
 	return risultato;
 	
 	
