@@ -72,7 +72,7 @@ public class Model {
 	      	if (e.getCrediti()+creditiParziali<=numeroCreditiImpostato) {
     		parziali.add(e);
     		ArrayList<Esame> combinabiliClone=this.clonaLista(combinabili);
-    		System.out.println(combinabiliClone.remove(e));
+    		combinabiliClone.remove(e);
     		//itero
 	   
 	    combina(parziali,combinabiliClone,creditiParziali+combinabili.get(i).getCrediti(),creditiPerVotoParziali+combinabili.get(i).getCrediti()*combinabili.get(i).getVoto());
