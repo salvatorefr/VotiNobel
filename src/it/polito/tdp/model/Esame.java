@@ -2,6 +2,12 @@ package it.polito.tdp.model;
 
 public class Esame {
 
+	@Override
+	protected Esame clone()  {
+		
+		return new Esame(this.codins,this.nomeCorso,this.crediti,this.voto);
+	}
+
 	private String codins;
 	private String nomeCorso;
 	private int voto;
@@ -77,7 +83,7 @@ public class Esame {
 
 	@Override
 	public String toString() {
-		return String.format("codins: %-6s  crediti: %-2d  voto: %-2d  %s", codins, crediti, voto, nomeCorso);
+		return String.format("codins: %-6s  crediti: %-2d  voto: %-2d  %s \n", codins, crediti, voto, nomeCorso);
 	}
 
 }
