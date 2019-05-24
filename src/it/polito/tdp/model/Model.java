@@ -24,6 +24,7 @@ public class Model {
 	
 	public List<Esame> calcolaSottoinsiemeEsami(int numeroCrediti) {
 	
+	
 	combinazioni=new HashMap<ArrayList<Esame>,Double>();
 	this.numeroCreditiImpostato=numeroCrediti;
 	EsameDAO eDao= new EsameDAO();	
@@ -53,6 +54,7 @@ public class Model {
 	
 
 	private void combina(ArrayList<Esame> parziali, ArrayList<Esame> combinabili,int creditiParziali, int creditiPerVotoParziali) {
+			
 		//finisce quando i crediti==numero crediti o Combinabili.size=0
 		//quando finisce clona la lista e la aggiunge alle combinazioni possibili
 		
@@ -67,8 +69,10 @@ public class Model {
    
    //se non contiene l'elemento, lo aggiunge ai parziali,rimuove l'elemento dai combinabili
     for (int i=0;i<combinabili.size();i++) { 
+    	
+    	
     	Esame e=combinabili.get(i);
-    if (!parziali.contains(e)) {
+ 
 	      	if (e.getCrediti()+creditiParziali<=numeroCreditiImpostato) {
     		parziali.add(e);
     		ArrayList<Esame> combinabiliClone=this.clonaLista(combinabili);
@@ -80,14 +84,22 @@ public class Model {
 	   parziali.remove(e);
 	  
 	   }
+	      	else {
+	      		ArrayList<Esame> combinabiliClone=this.clonaLista(combinabili);
+	    		combinabiliClone.remove(e);
+	    		combina(parziali,combinabiliClone,creditiParziali,creditiPerVotoParziali);
+	    		
+	    		 return;
+	    		
+	      	}
 	   
   
-   }
+   
 	  
 	  
 
    }
-			
+   
 			
 		}
 	
