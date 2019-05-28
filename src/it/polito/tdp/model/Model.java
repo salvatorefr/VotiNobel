@@ -1,9 +1,9 @@
 package it.polito.tdp.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import it.polito.tdp.dao.EsameDAO;
 
@@ -12,114 +12,89 @@ import it.polito.tdp.dao.EsameDAO;
 
 
 public class Model {
-	
-	ArrayList<Esame> tutti= new ArrayList<Esame>();
-	
-	private int numeroCreditiImpostato=0;
-	
-	//mappa delle possibili combinazioni
-	
-	HashMap<ArrayList<Esame>, Double> combinazioni;
-	
+	List<Esame> tutti= new EsameDAO().getTuttiEsami();
+	List<Esame> best;
+	double media_best;
+	/**
+	 * crea una combinazione di corsi
+	 * @param numeroCrediti
+	 * @return {@link ArrayList} < {@link Esame}> 
+	 */
 	
 	public List<Esame> calcolaSottoinsiemeEsami(int numeroCrediti) {
+		media_best=0;
+		best=new ArrayList();
+	cerca(new HashSet<Esame>(),0,numeroCrediti);
+	return best;
+	}
+		
 	
 	
-	combinazioni=new HashMap<ArrayList<Esame>,Double>();
-	this.numeroCreditiImpostato=numeroCrediti;
-	EsameDAO eDao= new EsameDAO();	
-	tutti.addAll(eDao.getTuttiEsami());
-	
-	 //inizio
-	combina(new ArrayList<Esame>(),tutti,0,0)	;
-	
-	//return del migliore voto x crediti
-	double massimo=0;
-	ArrayList<Esame> risultato=new ArrayList<Esame>();
-	for (ArrayList<Esame> key :combinazioni.keySet()){
-	
-		if (combinazioni.get(key)>massimo) 
+	public void cerca(Set<Esame> parziale,int L, int m) { //L = livello, m= crediti
+		
+		int crediti= sommaCrediti(parziale);
+		
+		if (crediti>m){
+			return;
+			}
+		if (crediti==m){
+			double media= calcolaMedia(parziale);
+			if (media>media_best){
+				media_best=media;
+				best= new ArrayList<Esame>(parziale);
+				return;
+				}
+			}
+		else//se i crediti sono minori di m
 		{
-			massimo=combinazioni.get(key);
-			risultato=key;
-		}
-	}
-	
-	return risultato;
-	
-	
-	
-	}
-	
-	
-
-	private void combina(ArrayList<Esame> parziali, ArrayList<Esame> combinabili,int creditiParziali, int creditiPerVotoParziali) {
 			
-		//finisce quando i crediti==numero crediti o Combinabili.size=0
-		//quando finisce clona la lista e la aggiunge alle combinazioni possibili
-		
-   if (creditiParziali==numeroCreditiImpostato||combinabili.size()==0) {
-	   ArrayList<Esame> listaDaAggiungere= this.clonaLista(parziali);
-	   combinazioni.put(listaDaAggiungere, (double)creditiPerVotoParziali/(double)creditiParziali); 
-
-	   return;
-   }
-   
-   
-   
-   //se non contiene l'elemento, lo aggiunge ai parziali,rimuove l'elemento dai combinabili
-    for (int i=0;i<combinabili.size();i++) { 
-    	
-    	
-    	Esame e=combinabili.get(i);
- 
-	      	if (e.getCrediti()+creditiParziali<=numeroCreditiImpostato) {
-    		parziali.add(e);
-    		ArrayList<Esame> combinabiliClone=this.clonaLista(combinabili);
-    		combinabiliClone.remove(e);
-    		//itero
-	   
-	    combina(parziali,combinabiliClone,creditiParziali+combinabili.get(i).getCrediti(),creditiPerVotoParziali+combinabili.get(i).getCrediti()*combinabili.get(i).getVoto());
-	   //backtracking
-	   parziali.remove(e);
-	  
-	   }
-	      	else {
-	      		ArrayList<Esame> combinabiliClone=this.clonaLista(combinabili);
-	    		combinabiliClone.remove(e);
-	    		combina(parziali,combinabiliClone,creditiParziali,creditiPerVotoParziali);
-	    		
-	    		 return;
-	    		
-	      	}
-	   
-  
-   
-	  
-	  
-
-   }
-   
+			if (L==tutti.size()) //termina se non ci sono più esami da aggiungere
+			{return;}
+		else {
 			
+			cerca(parziale,L+1,m); //provo a non aggiungerlo
+			Esame singolo=tutti.get(L);
+			parziale.add(singolo); //provo ad aggiungerlo
+			cerca(parziale,L+1,m);
+			parziale.remove(singolo);//backtracking
+				
+			}
 		}
-	
-	
-	
-   public ArrayList<Esame> clonaLista(ArrayList<Esame> listaOriginale){
-	   ArrayList<Esame> listaClonata= new ArrayList<Esame>();
-	  listaClonata.addAll(listaOriginale);    
-	   return listaClonata;
-	
-   }
+			
 		
+
+	
 		
 	}
 
+	private int sommaCrediti(Set<Esame> parziale) {
+		int somma=0;
+	for (Esame e:parziale) {
+		somma+= e.getCrediti();
+	}
 	
-	
+		
+			
+		
+		return somma;
+	}
+
+	private double calcolaMedia(Set<Esame> parziale) {
+		
+		int creditiPerVoto=0;
+		int crediti=0;
+		for (Esame e:parziale) {
+			creditiPerVoto= e.getCrediti()*e.getVoto();
+			crediti+= e.getCrediti();
+		}
+		return creditiPerVoto/parziale.size();
+	}
+}
+
+		
+		
 	
 
 	
-
 	
 
